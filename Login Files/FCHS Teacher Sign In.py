@@ -13,8 +13,6 @@ import csv
 
 teacherDataFilename = "attendanceData.csv"
 
-
-
 def openCsvReadFile(filename):
     with open(filename, "rb") as csvFile:
         csvReadFile = csv.reader(csvFile)
@@ -146,8 +144,10 @@ def code_list():
                     my_file.write(each[0])
                     #writes all names of who are absent to .txt file
             my_file.close()
-
             os.startfile("C:/Users/tigertech/Desktop/Login Files/Slist.txt", "print")
+            my_file = open("Slist.txt", "w")
+            my_file.write("")
+            my_file.close()
             #end code_print
             
     window2 = tk.Toplevel()
