@@ -30,7 +30,7 @@ def searchTeacherLine(code):
     lineNum = 0
     for teacher in teacherFile:
         if teacher[0] == code:
-            return lineNum 
+            return teacher
         lineNum+=1
     return -1
 
@@ -47,51 +47,50 @@ var = tk.StringVar()
 txt1 = "\nFern Creek High School\nTeacher Sign In\n"
 
 teacherFile = openCsvReadFile("teacherData.csv")
+todayFile = openCsvAppendFile("Y"+str(time.localtime()[0])+"M"+str(time.localtime()[1])+"D"+str(time.localtime()[2])+".csv")
 
+def markTeacherAsPresent(roomNumber):
+    for teacher in teacherFile:
+        if teacher[0] == roomNumber:
+            todayFile.writerow(teacher[0:2]+[1])
+    return 1
+def searchForTeacher(roomNumber):
+    for teacher in teacherFile:
+        if teacher[0] == roomNumber:
+            return teacher[1]
+        else:
+            return -1
 
+    return
 def code_run(event=None):
-    global var
     user = var.get()
-    teacherFile = openCsvReadFile("teacherData.csv")
-    todayFile = openCsvAppendFile("Y"+str(time.localtime()[0])+"M"+str(time.localtime()[1])+"D"+str(time.localtime()[2])+".csv")
     def yes():
-        todayFile = openCsvAppendFile("Y"+str(time.localtime()[0])+"M"+str(time.localtime()[1])+"D"+str(time.localtime()[2])+".csv")
-        for teacher in teacherFile:
-            print("DDFAFA"+teacher)
-            if user == teacher[0]:
-                    print("l")
-                    todayFile.writerow(teacher[0:2]+[1])
-                    print(teacher[0:2]+[1])
-                    os.startfile(todayFile, "print")
-                    window.destroy()
-                #end yes
-            else:
-                print(user)
-                print("kk")
-        print("ahh")
+        markTeacherAsPresent(user)
+        window.destroy()
+        return
     def no():
         var.set("")
         window.destroy()
+        return
         #end no
-        
-    user = var.get()
-
-    for teacher in teacherFile:
-        if user == teacher[0]:
-                txt2 = "Are you \n%s?" % (teacher[1])
-                LARGE_FONT=("Verdana", 25)
-                window = tk.Toplevel()
-                label = tk.Label(window, text=txt2, font=LARGE_FONT)
-                label.pack(side="top", fill="both", padx=10, pady=10)
-                button8 = tk.Button(window, text="Yes!", command=lambda: yes(), width=8, font=LARGE_FONT, bd = 6)
-                button8.pack()
-                button9 = tk.Button(window, text="No!", command=lambda: no(), width=8, font=LARGE_FONT, bd = 6)
-                button9.pack()
-                root.title("FCHS SIGN IN")
-         #       root.wm_iconbitmap(window, "ICON.ico")
-                #print request accepted window
-        else:
+    
+    currentTeacherName = searchForTeacher(user)
+    if currentTeacherName != -1:
+            txt2 = "Are you \n%s?" % (currentTeacherName)
+            LARGE_FONT=("Verdana", 25)
+            window = tk.Toplevel()
+            label = tk.Label(window, text=txt2, font=LARGE_FONT)
+            label.pack(side="top", fill="both", padx=10, pady=10)
+            button8 = tk.Button(window, text="Yes!", command=lambda: yes(), width=8, font=LARGE_FONT, bd = 6)
+            button8.pack()
+            button9 = tk.Button(window, text="No!", command=lambda: no(), width=8, font=LARGE_FONT, bd = 6)
+            button9.pack()
+            root.title("FCHS SIGN IN")
             var.set("")
+     #       root.wm_iconbitmap(window, "ICON.ico")
+            #print request accepted window
+    else:
+        var.set("")
             
 def code_list():
     
