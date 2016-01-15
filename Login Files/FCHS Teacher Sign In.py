@@ -4,6 +4,7 @@
 import tkinter as tk
 import os
 from time import gmtime, strftime
+import time
 import csv
 '''
 -Note: Anything can work as the key, doesn't have to be numbers
@@ -11,21 +12,17 @@ import csv
 -Note: Make teacher list seperate from code
 '''
 
-teacherDataFilename = "attendanceData.csv"
-
 def openCsvReadFile(filename):
-    with open(filename, "rb") as csvFile:
-        csvReadFile = csv.reader(csvFile)
+    tempReadFile = open(filename, "r")
+    csvReadFile = csv.reader(tempReadFile)
     return csvReadFile
 
 def openCsvWriteFile(filename):
-    with open(filename, "wb") as csvFile:
-        csvWriteFile = csv.writer(csvFile)
+    csvWriteFile = csv.writer(open(filename, "w"))
     return csvWriteFile
 
 def openCsvAppendFile(filename):
-    with open(filename, "a") as csvFile:
-        csvAppendFile = csv.writer(csvFile)
+    csvAppendFile = csv.writer(open(filename, "a"))
     return csvAppendFile
 
 def searchTeacherLine(code):
@@ -34,7 +31,7 @@ def searchTeacherLine(code):
     for teacher in teacherFile:
         if teacher[0] == code:
             return lineNum 
-        lineNum ++
+        lineNum+=1
     return -1
 
 def changeAttendanceState(teacher):
@@ -44,30 +41,34 @@ def changeAttendanceState(teacher):
     return editAttendanceFile[teacher][2]
     
 
+
 root = tk.Tk()
 var = tk.StringVar()
 txt1 = "\nFern Creek High School\nTeacher Sign In\n"
 
-def code_run(event=None):
+teacherFile = openCsvReadFile("teacherData.csv")
 
+
+def code_run(event=None):
+    global var
+    user = var.get()
+    teacherFile = openCsvReadFile("teacherData.csv")
+    todayFile = openCsvAppendFile("Y"+str(time.localtime()[0])+"M"+str(time.localtime()[1])+"D"+str(time.localtime()[2])+".csv")
     def yes():
-        for i in codes.keys():
-            if user == i:
-                if codes[user][1] == 0:
-                    codes[user][1] = 1
-                    name = codes[user][0]
-                    
-                    time = strftime("%H:%M:%S", gmtime())
-                    my_file = open("Login.txt", "w")
-                    name = codes[user][0]
-                    my_file.write(name)
-                    my_file.write("\n")
-                    my_file.write(time)
-                    my_file.close()
-                    os.startfile("Login.txt", "print")
-                window.destroy()
+        todayFile = openCsvAppendFile("Y"+str(time.localtime()[0])+"M"+str(time.localtime()[1])+"D"+str(time.localtime()[2])+".csv")
+        for teacher in teacherFile:
+            print("DDFAFA"+teacher)
+            if user == teacher[0]:
+                    print("l")
+                    todayFile.writerow(teacher[0:2]+[1])
+                    print(teacher[0:2]+[1])
+                    os.startfile(todayFile, "print")
+                    window.destroy()
                 #end yes
-                
+            else:
+                print(user)
+                print("kk")
+        print("ahh")
     def no():
         var.set("")
         window.destroy()
@@ -75,40 +76,20 @@ def code_run(event=None):
         
     user = var.get()
 
-    for i in codes.keys():
-        if user == i:
-            if codes[user][1] == 0:
-                name = codes[user][0]
-                txt2 = "Are you \n%s?" % (name)
+    for teacher in teacherFile:
+        if user == teacher[0]:
+                txt2 = "Are you \n%s?" % (teacher[1])
                 LARGE_FONT=("Verdana", 25)
                 window = tk.Toplevel()
                 label = tk.Label(window, text=txt2, font=LARGE_FONT)
                 label.pack(side="top", fill="both", padx=10, pady=10)
-                button8 = tk.Button(window, text="Yes", command=yes, width=8, font=LARGE_FONT, bd = 6)
+                button8 = tk.Button(window, text="Yes!", command=lambda: yes(), width=8, font=LARGE_FONT, bd = 6)
                 button8.pack()
-                button9 = tk.Button(window, text="No", command=no, width=8, font=LARGE_FONT, bd = 6)
+                button9 = tk.Button(window, text="No!", command=lambda: no(), width=8, font=LARGE_FONT, bd = 6)
                 button9.pack()
                 root.title("FCHS SIGN IN")
-                root.wm_iconbitmap(window, "ICON.ico")
+         #       root.wm_iconbitmap(window, "ICON.ico")
                 #print request accepted window
-
-            elif codes[user][1] == 1:
-                def ok():
-                    var.set("")
-                    window1.destroy()
-                    #end ok
-                    
-                name = codes[user][0]
-                LARGE_FONT=("Verdana", 25)
-                window1 = tk.Toplevel()
-                label9 = tk.Label(window1, text="You've Already signed\n in %s!" % name, font=LARGE_FONT)
-                label9.pack(side="top", fill="both", padx=10, pady=10)
-                button10 = tk.Button(window1, text="OK", command=ok, width=5, font=LARGE_FONT, bd = 6)
-                button10.pack()
-                root.title("FCHS SIGN IN")
-                root.wm_iconbitmap(window1, "ICON.ico")
-                #print request denied window
-
         else:
             var.set("")
             
@@ -194,8 +175,8 @@ class FCHSapp:
     button2.pack()
     root.bind('<Return>', code_run)
     root.title("FCHS SIGN IN")
-    root.wm_iconbitmap("ICON.ico")
+#    root.wm_iconbitmap("ICON.ico")
     w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-    root.overrideredirect(1)
+#    root.overrideredirect(1)
     root.geometry("%dx%d+0+0" % (w, h))
 tk.mainloop()
